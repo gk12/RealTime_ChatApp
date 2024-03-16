@@ -20,22 +20,6 @@ async function createToken(userId, res) {
   // return token;
 }
 
-async function verifyToken() {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
-    if (err) {
-      return res.json({
-        message: err,
-      });
-    }
-    next();
-  });
-}
-
 module.exports = {
   createToken,
-  verifyToken,
 };

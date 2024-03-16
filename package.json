@@ -18,5 +18,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.1",
     "nodemon": "^3.1.0"
+  },
+  "devDependencies": {
+    "daisyui": "^4.7.3"
   }
 }

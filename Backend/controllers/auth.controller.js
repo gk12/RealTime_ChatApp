@@ -12,12 +12,13 @@ const login = async (req, res) => {
       return res.end("Invalid username or password");
     }
     const userDetails = {
-      id: username._id,
-      name: username.name,
+      id: user._id,
+      name: user.name,
       username: user.username,
-      profilePicture: username.profilePicture,
+      profilePicture: user.profilePicture,
     };
-    await createToken(username._id, res),
+    console.log();
+    await createToken(user._id, res),
       res.status(200).json({
         userDetails,
         message: "user logged in successfully",
