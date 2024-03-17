@@ -4,6 +4,7 @@ import logo from "../assets/logo.svg";
 import { baseUrl } from "../App";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -23,8 +24,13 @@ const Signin = () => {
     try {
       console.log(formData, "data");
       const res = await axios.post(`${baseUrl}/auth/login`, formData);
-      console.log(res.data, "res");
+      if (res.status === 200) {
+        localStorage.setItem("user", JSON.stringify(res.data));
+        navigate("/home");
+      }
+      toast.success(res.data.message);
     } catch (error) {
+      toast.success("something went wrong");
       console.log(error);
     }
   };
@@ -61,7 +67,7 @@ const Signin = () => {
         <div className='mt-5'>
           Don't have account?
           <span
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/")}
             className='font-bold text-[#004AAD] cursor-pointer ml-1'
           >
             Sign Up

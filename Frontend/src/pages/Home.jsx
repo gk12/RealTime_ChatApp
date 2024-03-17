@@ -5,8 +5,14 @@ import fllter from "../assets/filter.svg";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { GoDotFill } from "react-icons/go";
 import ChatMessages from "../components/ChatMessages";
+import { TbLogout2 } from "react-icons/tb";
+import axios from "axios";
+import { baseUrl } from "../App";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [activePagination, setActivePagination] = useState(0);
   const Activepagination = [1, 2, 3, 4, 5, 6, 7];
@@ -89,6 +95,17 @@ export default function Home() {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/auth/logout`);
+      toast.success(res.data.message);
+      localStorage.clear();
+      navigate("/signin");
+    } catch (error) {
+      toast.error("Error while logging out");
+    }
   };
 
   return (
@@ -188,6 +205,9 @@ export default function Home() {
                   <FaChevronRight size={15} className='text-[#454F5B] ml-3' />
                 </button>
               </div>
+              <button onClick={handleLogout} className='w-[20%] h-[20%]'>
+                <TbLogout2 className='w-[50%] h-[50%] cursor-pointer' />
+              </button>
             </div>
           </div>
           <div className='w-[50%] rounded-lg bg-white overflow-y-hidden '>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../App";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -15,6 +16,10 @@ const Signup = () => {
     try {
       const res = await axios.post(`${baseUrl}/auth/register`, formData);
       console.log(res.data, "Data");
+      if (res.status === 201) {
+        navigate("/signin");
+      }
+      toast.success(res.data.message);
       setFormData({
         name: "",
         username: "",
@@ -22,6 +27,7 @@ const Signup = () => {
         password: "",
       });
     } catch (error) {
+      toast.error("something went wrong");
       console.log(error);
     }
   };
@@ -79,6 +85,7 @@ const Signup = () => {
               type='radio'
               name='gender'
               id='male'
+              checked={formData.gender === "male"}
             />
             <label htmlFor='female ' className='text-white'>
               Female
@@ -89,6 +96,7 @@ const Signup = () => {
               type='radio'
               name='gender'
               id='female'
+              checked={formData.gender === "female"}
             />
           </div>
         </div>
