@@ -17,7 +17,6 @@ const login = async (req, res) => {
       username: user.username,
       profilePicture: user.profilePicture,
     };
-    console.log();
     await createToken(user._id, res),
       res.status(200).json({
         userDetails,

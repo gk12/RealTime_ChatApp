@@ -5,6 +5,7 @@ import { baseUrl } from "../App";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -23,7 +24,9 @@ const Signin = () => {
   const submitForm = async () => {
     try {
       console.log(formData, "data");
-      const res = await axios.post(`${baseUrl}/auth/login`, formData);
+      const res = await axios.post(`${baseUrl}/auth/login`, formData, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         localStorage.setItem("user", JSON.stringify(res.data));
         navigate("/home");

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import searchIcon from "../assets/search.svg";
 import avtar1 from "../assets/avtar-1.png";
 import fllter from "../assets/filter.svg";
@@ -16,6 +16,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activePagination, setActivePagination] = useState(0);
   const Activepagination = [1, 2, 3, 4, 5, 6, 7];
+  const [users, setUsers] = useState();
   const [customerData, setCustomerData] = useState([
     {
       name: "Ann Curtis",
@@ -89,7 +90,7 @@ export default function Home() {
     },
   ]);
 
-  const filteredAndPaginatedCustomers = customerData?.filter((customer) =>
+  const filteredAndPaginatedCustomers = users?.filter((customer) =>
     customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -107,7 +108,21 @@ export default function Home() {
       toast.error("Error while logging out");
     }
   };
+  const getAllusers = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/users`, {
+        withCredentials: true,
+      });
+      setUsers(res.data.users);
+      console.log(res.data.users, "Res users");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    getAllusers();
+  }, []);
   return (
     <div className='w-full h-screen flex bg-[#F0F5FC]'>
       <div className='w-full relative pl-[18rem] pr-[16rem]'>
@@ -145,7 +160,7 @@ export default function Home() {
                       >
                         <div className='relative'>
                           <img
-                            src={avtar1}
+                            src={`${data.profilePicture}`}
                             alt='logo'
                             className='w-12 h-12 mr-4'
                           />
