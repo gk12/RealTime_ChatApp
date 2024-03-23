@@ -17,11 +17,11 @@ const login = async (req, res) => {
       username: user.username,
       profilePicture: user.profilePicture,
     };
-    await createToken(user._id, res),
-      res.status(200).json({
-        userDetails,
-        message: "user logged in successfully",
-      });
+    await createToken(user._id, res);
+    res.status(200).json({
+      userDetails,
+      message: "user logged in successfully",
+    });
   } catch (error) {
     console.log(error, "error");
     res.status(400).json({

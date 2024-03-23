@@ -17,7 +17,7 @@ async function createToken(userId, res) {
     sameSite: "strict", // prevent from cross site request forgery attack
     secure: process.env.NODE_ENV !== "development",
   });
-  // return token;
+    // return token;
 }
 
 module.exports = {
