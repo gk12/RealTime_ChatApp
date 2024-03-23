@@ -4,12 +4,12 @@ import avtar1 from "../assets/avtar-1.png";
 import fllter from "../assets/filter.svg";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { GoDotFill } from "react-icons/go";
-import ChatMessages from "../components/ChatMessages";
 import { TbLogout2 } from "react-icons/tb";
 import axios from "axios";
 import { baseUrl } from "../App";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import ChatMessages from "../components/ChatMessages";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,6 +17,13 @@ export default function Home() {
   const [activePagination, setActivePagination] = useState(0);
   const Activepagination = [1, 2, 3, 4, 5, 6, 7];
   const [users, setUsers] = useState();
+  const [selectedConversion, setSelectedConversion] = useState(0);
+  const [selectedUserId, setSelectedUserId] = useState(users?._id);
+  const [selectedUserName, setSelectedUserName] = useState(users?.name);
+  const [selectedUserProfile, setSelectedUserProfile] = useState();
+  const [selectedUserusername, setSelectedUserusername] = useState(
+    users?.username
+  );
   const [customerData, setCustomerData] = useState([
     {
       name: "Ann Curtis",
@@ -90,10 +97,6 @@ export default function Home() {
     },
   ]);
 
-  const filteredAndPaginatedCustomers = users?.filter((customer) =>
-    customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -114,10 +117,17 @@ export default function Home() {
         withCredentials: true,
       });
       setUsers(res.data.users);
-      console.log(res.data.users, "Res users");
+      // console.log(res.data.users, "Res users");
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleSelect = async (uId, index, userName, email, profilePicture) => {
+    setSelectedUserId(uId);
+    setSelectedUserName(userName);
+    setSelectedUserusername(email);
+    setSelectedConversion(index);
+    setSelectedUserProfile(profilePicture);
   };
 
   useEffect(() => {
@@ -148,50 +158,62 @@ export default function Home() {
             </div>
 
             <div className='h-[59vh] flex flex-col overflow-y-scroll'>
-              {filteredAndPaginatedCustomers &&
-              filteredAndPaginatedCustomers?.length > 0 ? (
-                filteredAndPaginatedCustomers
-                  ?.slice(0, 7)
-                  ?.map((data, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className='w-full flex items-center cursor-pointer hover:bg-[#F4F6F8] py-2 px-5 my-3'
-                      >
-                        <div className='relative'>
-                          <img
-                            src={`${data.profilePicture}`}
-                            alt='logo'
-                            className='w-12 h-12 mr-4'
-                          />
-                          <GoDotFill
-                            size={15}
-                            className={`${
-                              data.status ? "text-[#54D62C]" : "text-[#FF0052]"
-                            } bottom-0 right-4 absolute `}
-                          />
-                        </div>
-                        <div className='w-[50%]'>
-                          <div className='flex items-center'>
-                            <h1 className='text-[#454F5B] font-bold'>
-                              {data.name}
-                            </h1>
-                            {data.unreadMessages > 0 && (
-                              <p className='w-4 h-4 rounded-full text-xs text-center text-white bg-[#004AAD] ml-2'>
-                                {data.unreadMessages}
-                              </p>
-                            )}
-                          </div>
-                          <p className='text-[#454F5B] font-medium text-ellipsis overflow-hidden whitespace-nowrap'>
-                            {data.Data}
-                          </p>
-                        </div>
-                        <div className='self-end ml-3'>
-                          <h1 className='text-[#738493]'>{data.time}</h1>
-                        </div>
+              {users && users?.length > 0 ? (
+                users?.slice(0, 7)?.map((data, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className={`${
+                        index === selectedConversion
+                          ? "bg-[#F4F6F8]"
+                          : "bg-white"
+                      } w-full flex items-center cursor-pointer hover:bg-[#F4F6F8] py-2 px-5 my-3`}
+                      onClick={() =>
+                        handleSelect(
+                          data._id,
+                          index,
+                          data?.name,
+                          data?.username,
+                          data?.profilePicture
+                        )
+                      }
+                    >
+                      <div className='relative'>
+                        <img
+                          src={`${data.profilePicture}`}
+                          alt='logo'
+                          className='w-12 h-12 mr-4'
+                        />
+                        <GoDotFill
+                          size={15}
+                          className={`${
+                            data.status ? "text-[#54D62C]" : "text-[#FF0052]"
+                          } bottom-0 right-4 absolute `}
+                        />
                       </div>
-                    );
-                  })
+                      <div className='w-[50%]'>
+                        <div className='flex items-center'>
+                          <h1 className='text-[#454F5B] font-bold'>
+                            {data.name}
+                          </h1>
+                          {data.unreadMessages > 0 && (
+                            <p className='w-4 h-4 rounded-full text-xs text-center text-white bg-[#004AAD] ml-2'>
+                              {data.unreadMessages}
+                            </p>
+                          )}
+                        </div>
+                        <p className='text-[#454F5B] font-medium text-ellipsis overflow-hidden whitespace-nowrap'>
+                          {data.Data}
+                        </p>
+                      </div>
+                      <div className='self-end ml-3'>
+                        <h1 className='text-[#738493]'>
+                          {data.time || "123456"}
+                        </h1>
+                      </div>
+                    </div>
+                  );
+                })
               ) : (
                 <p className='text-center py-10'>No customer data available.</p>
               )}
@@ -226,7 +248,12 @@ export default function Home() {
             </div>
           </div>
           <div className='w-[50%] rounded-lg bg-white overflow-y-hidden '>
-            <ChatMessages />
+            <ChatMessages
+              selectedUserId={selectedUserId}
+              selectedUserName={selectedUserName}
+              selectedUserusername={selectedUserusername}
+              selectedUserProfile={selectedUserProfile}
+            />
           </div>
         </div>
       </div>

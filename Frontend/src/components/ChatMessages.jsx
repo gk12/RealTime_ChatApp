@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import aiIcon from "../assets//ai-icon.svg";
 import userAvatar from "../assets/avtar-1.png";
 import galleryIcon from "../assets/gallery.svg";
@@ -6,41 +6,103 @@ import paperClipIcon from "../assets/paperclip.svg";
 import emojiIcon from "../assets/emoji.svg";
 import sendArrowIcon from "../assets/sendArrow.svg";
 import { FiInfo } from "react-icons/fi";
+import axios from "axios";
+import { baseUrl } from "../App";
 
-const ChatMessages = () => {
+const ChatMessages = (props) => {
+  const {
+    selectedUserId,
+    selectedUserusername,
+    selectedUserName,
+    selectedUserProfile,
+  } = props;
+  // console.log(
+  //   { selectedUserId, selectedUserusername, selectedUserName },
+  //   "selectedUserId"
+  // );
+  const [messageContent, setMessageContent] = useState();
+  const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
-  const [messages, setMessages] = useState([
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "Tom",
-    },
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "ai",
-    },
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "Tom",
-    },
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "ai",
-    },
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "Tom",
-    },
-    {
-      msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
-      time: "Sent 12:30 pm",
-      sender: "ai",
-    },
-  ]);
+  const getMessages = async () => {
+    try {
+      const messages = await axios.get(
+        `${baseUrl}/messages/${selectedUserId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setMessages(messages.data?.messages?.messageId);
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+  useEffect(() => {
+    getMessages();
+  }, [selectedUserId]);
+
+  const handleMessage = (e) => {
+    setMessageContent(e.target.value);
+  };
+
+  const sendMessages = async (e) => {
+    e.preventDefault();
+    if (!messageContent) return;
+    setMessages([...messages, messageContent]);
+    console.log(messageContent, "value");
+    try {
+      const res = await axios.post(
+        `${baseUrl}/messages/send/65edc034e93e2bf01dce1e25`,
+        { messageContent },
+        { withCredentials: true }
+      );
+      setMessages(...messages, e.target.value);
+    } catch (error) {
+      console.log(error, "error");
+    }
+    setMessageContent("");
+  };
+  function MessageTime(time) {
+    const date = new Date(time);
+
+    const formattedTime = date.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return formattedTime;
+  }
+  // const [messages, setMessages] = useState([
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "Tom",
+  //   },
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "ai",
+  //   },
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "Tom",
+  //   },
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "ai",
+  //   },
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "Tom",
+  //   },
+  //   {
+  //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
+  //     time: "Sent 12:30 pm",
+  //     sender: "ai",
+  //   },
+  // ]);
   return (
     <div className='w-full h-[80vh] flex justify-center md:justify-start items-center py-16 md:py-0'>
       <div className='w-full h-full flex relative rounded-md shadow-lg bg-white overflow-hidden'>
@@ -53,8 +115,8 @@ const ChatMessages = () => {
                 className='h-14 w-14 rounded-full'
               />
               <div className='ml-3'>
-                <h1 className='font-bold'>Ann Curtis</h1>
-                <p className='text-sm'>anncurtis@gmail.com</p>
+                <h1 className='font-bold'>{selectedUserName}</h1>
+                <p className='text-sm'>{selectedUserusername}</p>
               </div>
             </div>
             <button className='flex items-center text-white'>
@@ -66,23 +128,26 @@ const ChatMessages = () => {
             ref={scrollRef}
             className='flex flex-col w-full h-[77%] pb-10 px-5 overflow-scroll'
           >
-            {messages?.length > 0 &&
+            {messages &&
+              messages?.length > 0 &&
               messages?.map((item, index) => {
                 return (
                   <div className='w-full' key={index}>
-                    {item.sender === "ai" ? (
+                    {item.sender === selectedUserId ? (
                       <div className='max-w-[70%] w-fit flex items-start ml-3 mt-5 '>
                         <img
-                          src={userAvatar}
+                          src={selectedUserProfile}
                           alt='logo'
                           className='w-11 h-11 object-cover'
                         />
                         <div>
                           <div className='bg-[#F4F6F8] w-full rounded-lg p-4 ml-3'>
-                            <h1 className='text-[#454F5B]'>{item?.msg}</h1>
+                            <h1 className='text-[#454F5B]'>
+                              {item?.messageContent}
+                            </h1>
                           </div>
                           <p className='text-sm text-[#738493] mt-1.5 ml-3'>
-                            {item.time}
+                            {MessageTime(item?.createdAt)}
                           </p>
                         </div>
                       </div>
@@ -90,10 +155,13 @@ const ChatMessages = () => {
                       <div className='max-w-[70%] w-fit flex items-start ml-auto mt-5'>
                         <div>
                           <div className='bg-[#004AAD] p-4 mr-2 rounded-lg'>
-                            <h1 className='text-white'>{item.msg}</h1>
+                            <h1 className='text-white'>
+                              {item?.messageContent}
+                            </h1>
                           </div>
                           <p className='text-right text-sm text-[#738493] mt-1.5 mr-3'>
-                            {item.time}
+                            {/* {item.time} */}
+                            {MessageTime(item?.createdAt)}
                           </p>
                         </div>
                         <img src={aiIcon} alt='logo' className='w-11 h-11' />
@@ -116,12 +184,14 @@ const ChatMessages = () => {
                 className='bg-[#F4F6F8] w-full outline-none text-sm'
                 placeholder='Enter message...'
                 type='text'
+                value={messageContent}
+                onChange={handleMessage}
               />
               <button className='mx-3'>
                 <img src={emojiIcon} alt='logo' className='w-7' />
               </button>
             </div>
-            <button className='ml-5'>
+            <button onClick={sendMessages} className='ml-5'>
               <img src={sendArrowIcon} alt='logo' className='w-9' />
             </button>
           </div>
