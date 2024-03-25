@@ -139,7 +139,7 @@ export default function Home() {
         <h1 className='text-black text-[1.6rem] leading-[1.1] font-semibold mt-8'>
           Chat Logs and History
         </h1>
-        <div className='flex w-full mt-10'>
+        <div className='flex w-full mt-10 h-[85vh]'>
           <div className='w-[34%] rounded-lg bg-white py-3 mr-5'>
             <div className='flex items-center justify-between py-1.5 px-5'>
               <h1 className='text-black text-lg font-bold'>Chats</h1>
@@ -157,9 +157,9 @@ export default function Home() {
               />
             </div>
 
-            <div className='h-[59vh] flex flex-col overflow-y-scroll'>
+            <div className='h-[59vh] flex flex-col '>
               {users && users?.length > 0 ? (
-                users?.slice(0, 7)?.map((data, index) => {
+                users?.slice(0, 6)?.map((data, index) => {
                   return (
                     <div
                       key={index}
