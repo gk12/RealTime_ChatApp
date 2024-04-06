@@ -47,7 +47,7 @@ const ChatMessages = (props) => {
   const sendMessages = async (e) => {
     e.preventDefault();
     if (!messageContent) return;
-    setMessages([...messages, messageContent]);
+    setMessages([...messages, { messageContent }]);
     console.log(messageContent, "value");
     try {
       const res = await axios.post(
@@ -71,6 +71,12 @@ const ChatMessages = (props) => {
     });
     return formattedTime;
   }
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+  console.log(messages, "messages");
   // const [messages, setMessages] = useState([
   //   {
   //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
@@ -104,13 +110,13 @@ const ChatMessages = (props) => {
   //   },
   // ]);
   return (
-    <div className='w-full h-[80vh] flex justify-center md:justify-start items-center py-16 md:py-0'>
+    <div className='w-full h-[100%] flex justify-center md:justify-start items-center py-16 md:py-0'>
       <div className='w-full h-full flex relative rounded-md shadow-lg bg-white overflow-hidden'>
         <div className='w-full'>
           <div className='w-full flex justify-between bg-gradient-to-r from-[#004AAD] to-[#3886FF] px-6 py-4'>
             <div className='flex items-center text-white'>
               <img
-                src={userAvatar}
+                src={selectedUserProfile}
                 alt='logo'
                 className='h-14 w-14 rounded-full'
               />
@@ -126,7 +132,7 @@ const ChatMessages = (props) => {
 
           <div
             ref={scrollRef}
-            className='flex flex-col w-full h-[77%] pb-10 px-5 overflow-scroll'
+            className='flex flex-col w-full h-[77%] pb-10 px-5 overflow-y-auto'
           >
             {messages &&
               messages?.length > 0 &&
@@ -161,7 +167,9 @@ const ChatMessages = (props) => {
                           </div>
                           <p className='text-right text-sm text-[#738493] mt-1.5 mr-3'>
                             {/* {item.time} */}
-                            {MessageTime(item?.createdAt)}
+                            {item?.createdAt
+                              ? MessageTime(item?.createdAt)
+                              : "just now"}
                           </p>
                         </div>
                         <img src={aiIcon} alt='logo' className='w-11 h-11' />
@@ -172,29 +180,31 @@ const ChatMessages = (props) => {
               })}
           </div>
 
-          <div className='w-full flex rounded-md shadow-inner bg-[#fff] px-6 py-4'>
-            <button>
-              <img src={galleryIcon} alt='logo' className='w-8' />
-            </button>
-            <button className='mx-3'>
-              <img src={paperClipIcon} alt='logo' className='w-8' />
-            </button>
-            <div className='flex bg-[#F4F6F8] w-full rounded-full pl-4 py-2 ml-2'>
-              <input
-                className='bg-[#F4F6F8] w-full outline-none text-sm'
-                placeholder='Enter message...'
-                type='text'
-                value={messageContent}
-                onChange={handleMessage}
-              />
+          <form onSubmit={sendMessages}>
+            <div className='w-full flex rounded-md shadow-inner bg-[#fff] px-6 py-4'>
+              <button>
+                <img src={galleryIcon} alt='logo' className='w-8' />
+              </button>
               <button className='mx-3'>
-                <img src={emojiIcon} alt='logo' className='w-7' />
+                <img src={paperClipIcon} alt='logo' className='w-8' />
+              </button>
+              <div className='flex bg-[#F4F6F8] w-full rounded-full pl-4 py-2 ml-2'>
+                <input
+                  className='bg-[#F4F6F8] w-full outline-none text-sm text-black'
+                  placeholder='Enter message...'
+                  type='text'
+                  value={messageContent}
+                  onChange={handleMessage}
+                />
+                <button className='mx-3'>
+                  <img src={emojiIcon} alt='logo' className='w-7' />
+                </button>
+              </div>
+              <button type='submit' className='ml-5'>
+                <img src={sendArrowIcon} alt='logo' className='w-9' />
               </button>
             </div>
-            <button onClick={sendMessages} className='ml-5'>
-              <img src={sendArrowIcon} alt='logo' className='w-9' />
-            </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
