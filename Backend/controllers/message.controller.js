@@ -47,7 +47,6 @@ const getMessages = async (req, res) => {
   try {
     const { id } = req.params;
     const loggedInUserId = req.user._id;
-    console.log({ id, loggedInUserId }, "both ids");
     const messages = await Chats.findOne({
       participantsId: { $all: [id, loggedInUserId] },
     }).populate("messageId");
