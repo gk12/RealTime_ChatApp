@@ -7,7 +7,11 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await Users.findOne({ username: username });
-    const hashed = await bcrypt.compare(password, user.hashPass);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    console.log({ username, password });
+    const hashed = await bcrypt.compare(password, user?.hashPass);
+    console.log({ username, password });
+
     if (!hashed) {
       return res.end("Invalid username or password");
     }

@@ -1,9 +1,9 @@
 const Chats = require("../models/chat.model");
 const Messages = require("../models/message.model");
+const { getReceiverSocketId, io } = require("../socket/socket");
 
 const sendMessage = async (req, res) => {
   try {
-    console.log(req.user, "abcd");
     const { messageContent } = req.body;
     const { id: receiver } = req.params;
     const sender = req.user._id;
@@ -25,6 +25,12 @@ const sendMessage = async (req, res) => {
     // await Promise.all([chat.save(),message.save()])
 
     chat.messageId.push(message._id);
+    const receiverSocketId = getReceiverSocketId(receiver);
+    if (receiverSocketId) {
+      // this is used to send messages to a specific client so i have used to first else message will send
+      // to all the clients
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
     await chat.save();
     res.status(201).json({
       message: "message created successfully",
@@ -41,6 +47,7 @@ const getMessages = async (req, res) => {
   try {
     const { id } = req.params;
     const loggedInUserId = req.user._id;
+    console.log({ id, loggedInUserId }, "both ids");
     const messages = await Chats.findOne({
       participantsId: { $all: [id, loggedInUserId] },
     }).populate("messageId");
