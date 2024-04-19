@@ -1,8 +1,17 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
+const cors = require("cors");
+const { app, server } = require("./socket/socket");
+
+// const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 const database = require("./db/db");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -18,14 +27,23 @@ app.use("/api/auth", authRouter);
 app.use("/api/messages", verifyToken, messageRouter);
 // user route
 app.use("/api/users", verifyToken, userRouter);
-app.use("/", verifyToken, async (req, res) => {
-  res.end("home");
+app.use("/api/authCheck", verifyToken, async (req, res) => {
+  try {
+    res.status(200).json({
+      message: "Authorized User",
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "Unauthorized User",
+    });
+  }
 });
 function serverConnection() {
-  app.listen(port, () => {
+  // app.listen(port, () => {
+  //   console.log(`server listening on ${port}`);
+  // });
+  server.listen(port, () => {
     console.log(`server listening on ${port}`);
   });
 }
 database(serverConnection);
-
-// 1.43
