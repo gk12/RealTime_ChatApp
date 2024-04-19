@@ -12,14 +12,27 @@ const Signup = () => {
     gender: "",
     password: "",
   });
+  function requireFieldCheck() {
+    if (
+      formData.name === "" ||
+      formData.username === "" ||
+      formData.gender === "" ||
+      formData.password === ""
+    ) {
+      return false;
+    }
+    return true;
+  }
   const handleSubmit = async () => {
     try {
+      if (requireFieldCheck() === false)
+        return toast.error("Fill all the field before submit");
       const res = await axios.post(`${baseUrl}/auth/register`, formData);
       console.log(res.data, "Data");
       if (res.status === 201) {
         navigate("/signin");
       }
-      toast.success(res.data.message);
+      toast.success(res?.data?.message);
       setFormData({
         name: "",
         username: "",
@@ -33,7 +46,6 @@ const Signup = () => {
   };
   const handleChange = (e) => {
     e.preventDefault();
-    console.log(e.target, "abcd");
     const { name, value, id, type } = e.target;
     type === "radio"
       ? setFormData({
@@ -52,15 +64,16 @@ const Signup = () => {
         <h1 className='text-center text-3xl font-bold'>Sign Up</h1>
         <div className='w-[50%]  mt-7'>
           <input
-            className='w-full block rounded-md border-2 border-[#C5CDD8] py-5 px-7 mt-5'
+            className='w-full block rounded-md border-2 border-[#C5CDD8] bg-white  py-5 text-black px-7 mt-5'
             placeholder='name'
             type='text'
             name='name'
             value={formData.name}
             onChange={handleChange}
+            required
           />
           <input
-            className='w-full block rounded-md border-2 border-[#C5CDD8] py-5 px-7 mt-5'
+            className='w-full block rounded-md border-2 bg-white text-black border-[#C5CDD8] py-5 px-7 mt-5'
             placeholder='username'
             type='text'
             name='username'
@@ -68,15 +81,15 @@ const Signup = () => {
             onChange={handleChange}
           />
           <input
-            className='w-full block rounded-md border-2 border-[#C5CDD8] py-5 px-7 mt-5'
+            className='w-full block rounded-md border-2 text-black bg-white border-[#C5CDD8] py-5 px-7 mt-5'
             placeholder='Password'
             type='password'
             name='password'
             value={formData.password}
             onChange={handleChange}
           />
-          <div className='w-full flex py-5 px-7 mt-5 bg-black'>
-            <label htmlFor='male' className='text-white'>
+          <div className='w-full flex py-5 px-7 mt-5 bg-white '>
+            <label htmlFor='male' className='text-black'>
               Male
             </label>
             <input
@@ -87,12 +100,12 @@ const Signup = () => {
               id='male'
               checked={formData.gender === "male"}
             />
-            <label htmlFor='female ' className='text-white'>
+            <label htmlFor='female ' className='text-black'>
               Female
             </label>
             <input
               onChange={handleChange}
-              className='w-[50%]'
+              className='w-[50%] bg-black'
               type='radio'
               name='gender'
               id='female'

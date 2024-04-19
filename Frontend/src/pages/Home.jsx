@@ -10,9 +10,12 @@ import { baseUrl } from "../App";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ChatMessages from "../components/ChatMessages";
+import { useAuthContext } from "../context/AuthContext";
+import { useSocketContext } from "../context/SocketContex";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { authUser, setAuthUser } = useAuthContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [activePagination, setActivePagination] = useState(0);
   const Activepagination = [1, 2, 3, 4, 5, 6, 7];
@@ -96,6 +99,8 @@ export default function Home() {
       unreadMessages: 3,
     },
   ]);
+  const { onlineUsers } = useSocketContext();
+  // const online_user = onlineUsers.includes(selectedUserId);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -106,7 +111,9 @@ export default function Home() {
       const res = await axios.get(`${baseUrl}/auth/logout`);
       toast.success(res.data.message);
       localStorage.clear();
-      navigate("/signin");
+
+      // navigate("/signin");
+      setAuthUser(null);
     } catch (error) {
       toast.error("Error while logging out");
     }
@@ -134,13 +141,13 @@ export default function Home() {
     getAllusers();
   }, []);
   return (
-    <div className='w-full h-screen flex bg-[#F0F5FC]'>
-      <div className='w-full relative pl-[18rem] pr-[16rem]'>
+    <div className='w-full h-screen flex justify-center bg-[#F0F5FC]'>
+      <div className='w-[50%] md:w-[50%] relative  '>
         <h1 className='text-black text-[1.6rem] leading-[1.1] font-semibold mt-8'>
           Chat Logs and History
         </h1>
         <div className='flex w-full mt-10 h-[85vh]'>
-          <div className='w-[34%] rounded-lg bg-white py-3 mr-5'>
+          <div className='w-[70%] md:w-[40%] rounded-lg bg-white py-3 mr-5'>
             <div className='flex items-center justify-between py-1.5 px-5'>
               <h1 className='text-black text-lg font-bold'>Chats</h1>
               <img src={fllter} alt='logo' className='' />
@@ -187,7 +194,9 @@ export default function Home() {
                         <GoDotFill
                           size={15}
                           className={`${
-                            data.status ? "text-[#54D62C]" : "text-[#FF0052]"
+                            onlineUsers.includes(data._id)
+                              ? "text-[#54D62C]"
+                              : "text-[#FF0052]"
                           } bottom-0 right-4 absolute `}
                         />
                       </div>
@@ -247,7 +256,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className='w-[50%] rounded-lg bg-white overflow-y-hidden '>
+          <div className='w-[50%] md:w-[60%] rounded-lg bg-white overflow-y-hidden '>
             <ChatMessages
               selectedUserId={selectedUserId}
               selectedUserName={selectedUserName}

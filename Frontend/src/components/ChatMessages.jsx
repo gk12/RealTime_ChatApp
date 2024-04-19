@@ -8,6 +8,7 @@ import sendArrowIcon from "../assets/sendArrow.svg";
 import { FiInfo } from "react-icons/fi";
 import axios from "axios";
 import { baseUrl } from "../App";
+import { useSocketContext } from "../context/SocketContex";
 
 const ChatMessages = (props) => {
   const {
@@ -20,7 +21,8 @@ const ChatMessages = (props) => {
   //   { selectedUserId, selectedUserusername, selectedUserName },
   //   "selectedUserId"
   // );
-  const [messageContent, setMessageContent] = useState();
+  const { socket } = useSocketContext();
+  const [messageContent, setMessageContent] = useState("");
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const getMessages = async () => {
@@ -41,6 +43,7 @@ const ChatMessages = (props) => {
   }, [selectedUserId]);
 
   const handleMessage = (e) => {
+    e.preventDefault();
     setMessageContent(e.target.value);
   };
 
@@ -51,11 +54,11 @@ const ChatMessages = (props) => {
     console.log(messageContent, "value");
     try {
       const res = await axios.post(
-        `${baseUrl}/messages/send/65edc034e93e2bf01dce1e25`,
+        `${baseUrl}/messages/send/${selectedUserId}`,
         { messageContent },
         { withCredentials: true }
       );
-      setMessages(...messages, e.target.value);
+      // setMessages(...messages, e.target.value);
     } catch (error) {
       console.log(error, "error");
     }
@@ -77,6 +80,12 @@ const ChatMessages = (props) => {
     }
   }, [messages]);
   console.log(messages, "messages");
+  useEffect(() => {
+    socket?.on("newMessage", (newMessage) => {
+      setMessages([...messages, newMessage]);
+    });
+    return () => socket.off("newMessage");
+  }, [socket, setMessages, messages]);
   // const [messages, setMessages] = useState([
   //   {
   //     msg: "Hi, Tom. Thanks for reaching out! What can i help you wiith today?",
