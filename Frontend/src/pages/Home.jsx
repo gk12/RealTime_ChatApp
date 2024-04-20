@@ -12,21 +12,24 @@ import { useNavigate } from "react-router-dom";
 import ChatMessages from "../components/ChatMessages";
 import { useAuthContext } from "../context/AuthContext";
 import { useSocketContext } from "../context/SocketContex";
+import { FaMobileAlt } from "react-icons/fa";
+import { AiOutlineLaptop } from "react-icons/ai";
 
 export default function Home() {
   const navigate = useNavigate();
   const { authUser, setAuthUser } = useAuthContext();
   const [searchTerm, setSearchTerm] = useState("");
-  const [activePagination, setActivePagination] = useState(0);
-  const Activepagination = [1, 2, 3, 4, 5, 6, 7];
+  // const [activePagination, setActivePagination] = useState(0);
+  // const Activepagination = [1, 2, 3, 4, 5, 6, 7];
   const [users, setUsers] = useState();
-  const [selectedConversion, setSelectedConversion] = useState(0);
+  const [selectedConversion, setSelectedConversion] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(users?._id);
   const [selectedUserName, setSelectedUserName] = useState(users?.name);
   const [selectedUserProfile, setSelectedUserProfile] = useState();
   const [selectedUserusername, setSelectedUserusername] = useState(
     users?.username
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [customerData, setCustomerData] = useState([
     {
       name: "Ann Curtis",
@@ -99,10 +102,13 @@ export default function Home() {
       unreadMessages: 3,
     },
   ]);
+  const [totalPages, setTotalPages] = useState(1);
   const { onlineUsers } = useSocketContext();
   // const online_user = onlineUsers.includes(selectedUserId);
 
   const handleSearch = (event) => {
+    event.preventDefault();
+    // console.log(event.target.value, "searchItem");
     setSearchTerm(event.target.value);
   };
 
@@ -120,10 +126,15 @@ export default function Home() {
   };
   const getAllusers = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/users`, {
-        withCredentials: true,
-      });
-      setUsers(res.data.users);
+      const res = await axios.get(
+        `${baseUrl}/users?pageNo=${currentPage}&search=${searchTerm}`,
+        {
+          withCredentials: true,
+        }
+      );
+      // console.log(res.data, "data are====");
+      setUsers(res.data?.users);
+      setTotalPages(res.data?.noOfPages);
       // console.log(res.data.users, "Res users");
     } catch (error) {
       console.log(error);
@@ -136,10 +147,19 @@ export default function Home() {
     setSelectedConversion(index);
     setSelectedUserProfile(profilePicture);
   };
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+  const nextPage = () => {
+    setCurrentPage((prevPage) =>
+      prevPage < totalPages ? prevPage + 1 : prevPage
+    );
+  };
 
   useEffect(() => {
     getAllusers();
-  }, []);
+  }, [currentPage, searchTerm]);
+  // console.log(currentPage, "currentPage");
   return (
     <div className='w-full h-screen flex justify-center bg-[#F0F5FC]'>
       <div className='w-[50%] md:w-[50%] relative  '>
@@ -158,7 +178,7 @@ export default function Home() {
               <input
                 type='text'
                 placeholder='Search mail'
-                className='outline-none min-w-[230px] bg-white'
+                className='outline-none min-w-[200px] bg-white'
                 onChange={handleSearch}
                 value={searchTerm}
               />
@@ -230,24 +250,22 @@ export default function Home() {
 
             <div className='w-full p-3 mt-auto'>
               <div className='flex justify-center'>
-                <button>
-                  <FaChevronLeft size={15} className='text-[#C4CDD5] mr-3' />
+                <button onClick={prevPage}>
+                  <FaChevronLeft size={15} className='text-[#454F5B] mr-3' />
                 </button>
-                {Activepagination.map((data, index) => {
-                  return (
-                    <button
-                      className={`${
-                        index === activePagination &&
-                        "bg-blue-100 text-[#004AAD] rounded-full"
-                      } w-8 h-8 text-[#454F5B] font-semibold `}
-                      onClick={() => setActivePagination(index)}
-                      key={index}
-                    >
-                      {data}
-                    </button>
-                  );
-                })}
-                <button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    className={`${
+                      index + 1 === currentPage &&
+                      "bg-blue-100 text-[#004AAD] rounded-full"
+                    } w-8 h-8 text-[#454F5B] font-semibold `}
+                    onClick={() => setCurrentPage(index + 1)}
+                    key={index}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button onClick={nextPage}>
                   <FaChevronRight size={15} className='text-[#454F5B] ml-3' />
                 </button>
               </div>
@@ -256,14 +274,26 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className='w-[50%] md:w-[60%] rounded-lg bg-white overflow-y-hidden '>
-            <ChatMessages
-              selectedUserId={selectedUserId}
-              selectedUserName={selectedUserName}
-              selectedUserusername={selectedUserusername}
-              selectedUserProfile={selectedUserProfile}
-            />
-          </div>
+          {selectedUserId ? (
+            <div className='w-[50%] md:w-[60%] rounded-lg bg-white overflow-y-hidden '>
+              <ChatMessages
+                selectedUserId={selectedUserId}
+                selectedUserName={selectedUserName}
+                selectedUserusername={selectedUserusername}
+                selectedUserProfile={selectedUserProfile}
+              />
+            </div>
+          ) : (
+            <div className='w-[50%] md:w-[60%] rounded-lg bg-[#f0fdfa] overflow-y-hidden '>
+              <div className='ml-[6rem] mt-[20rem] flex'>
+                <FaMobileAlt className='w-[30%] h-[10%] transform rotate-6 pr-4' />
+                <AiOutlineLaptop className='w-[30%] h-[10%] transform -rotate-6 pr-4' />
+              </div>
+              <div className='ml-14 mt-[14rem]'>
+                <h2>Your Personal Messages are End to End</h2>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

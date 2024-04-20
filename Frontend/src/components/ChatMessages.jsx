@@ -49,6 +49,7 @@ const ChatMessages = (props) => {
 
   const sendMessages = async (e) => {
     e.preventDefault();
+    setMessageContent("");
     if (!messageContent) return;
     setMessages([...messages, { messageContent }]);
     console.log(messageContent, "value");
@@ -62,7 +63,7 @@ const ChatMessages = (props) => {
     } catch (error) {
       console.log(error, "error");
     }
-    setMessageContent("");
+    // setMessageContent("");
   };
   function MessageTime(time) {
     const date = new Date(time);
@@ -79,7 +80,7 @@ const ChatMessages = (props) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
-  console.log(messages, "messages");
+  // console.log(messages, "messages");
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       setMessages([...messages, newMessage]);
