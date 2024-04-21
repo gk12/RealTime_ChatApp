@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from "react";
-import searchIcon from "../assets/search.svg";
-import avtar1 from "../assets/avtar-1.png";
-import fllter from "../assets/filter.svg";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { GoDotFill } from "react-icons/go";
-import { TbLogout2 } from "react-icons/tb";
-import axios from "axios";
-import { baseUrl } from "../App";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import ChatMessages from "../components/ChatMessages";
-import { useAuthContext } from "../context/AuthContext";
-import { useSocketContext } from "../context/SocketContex";
-import { FaMobileAlt } from "react-icons/fa";
-import { AiOutlineLaptop } from "react-icons/ai";
+import React, { useEffect, useState } from 'react';
+import searchIcon from '../assets/search.svg';
+import avtar1 from '../assets/avtar-1.png';
+import fllter from '../assets/filter.svg';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { GoDotFill } from 'react-icons/go';
+import { TbLogout2 } from 'react-icons/tb';
+import axios from 'axios';
+import { baseUrl } from '../App';
+import { toast } from 'react-toastify';
+import ChatMessages from '../components/ChatMessages';
+import { useAuthContext } from '../context/AuthContext';
+import { useSocketContext } from '../context/SocketContex';
+import { FaMobileAlt } from 'react-icons/fa';
+import { AiOutlineLaptop } from 'react-icons/ai';
 
 export default function Home() {
-  const navigate = useNavigate();
   const { authUser, setAuthUser } = useAuthContext();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   // const [activePagination, setActivePagination] = useState(0);
   // const Activepagination = [1, 2, 3, 4, 5, 6, 7];
   const [users, setUsers] = useState();
@@ -32,77 +30,80 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [customerData, setCustomerData] = useState([
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 3,
     },
     {
-      name: "Rajan",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Rajan',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 0,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 0,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: false,
       unreadMessages: 2,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 6,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: false,
       unreadMessages: 0,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 3,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 10,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: false,
       unreadMessages: 3,
     },
     {
-      name: "Ann Curtis",
-      Data: "Hello how are you this is my data first",
-      time: "1 hour",
+      name: 'Ann Curtis',
+      Data: 'Hello how are you this is my data first',
+      time: '1 hour',
       status: true,
       unreadMessages: 3,
     },
   ]);
   const [totalPages, setTotalPages] = useState(1);
+  const [lastMessage, setLastMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
   const { onlineUsers } = useSocketContext();
   // const online_user = onlineUsers.includes(selectedUserId);
 
@@ -121,7 +122,7 @@ export default function Home() {
       // navigate("/signin");
       setAuthUser(null);
     } catch (error) {
-      toast.error("Error while logging out");
+      toast.error('Error while logging out');
     }
   };
   const getAllusers = async () => {
@@ -160,6 +161,7 @@ export default function Home() {
     getAllusers();
   }, [currentPage, searchTerm]);
   // console.log(currentPage, "currentPage");
+  console.log(messages, 'all the messages');
   return (
     <div className='w-full h-screen flex justify-center bg-[#F0F5FC]'>
       <div className='w-[50%] md:w-[50%] relative  '>
@@ -192,8 +194,8 @@ export default function Home() {
                       key={index}
                       className={`${
                         index === selectedConversion
-                          ? "bg-[#F4F6F8]"
-                          : "bg-white"
+                          ? 'bg-[#F4F6F8]'
+                          : 'bg-white'
                       } w-full flex items-center cursor-pointer hover:bg-[#F4F6F8] py-2 px-5 my-3`}
                       onClick={() =>
                         handleSelect(
@@ -215,8 +217,8 @@ export default function Home() {
                           size={15}
                           className={`${
                             onlineUsers.includes(data._id)
-                              ? "text-[#54D62C]"
-                              : "text-[#FF0052]"
+                              ? 'text-[#54D62C]'
+                              : 'text-[#FF0052]'
                           } bottom-0 right-4 absolute `}
                         />
                       </div>
@@ -237,7 +239,7 @@ export default function Home() {
                       </div>
                       <div className='self-end ml-3'>
                         <h1 className='text-[#738493]'>
-                          {data.time || "123456"}
+                          {data.time || '123456'}
                         </h1>
                       </div>
                     </div>
@@ -257,7 +259,7 @@ export default function Home() {
                   <button
                     className={`${
                       index + 1 === currentPage &&
-                      "bg-blue-100 text-[#004AAD] rounded-full"
+                      'bg-blue-100 text-[#004AAD] rounded-full'
                     } w-8 h-8 text-[#454F5B] font-semibold `}
                     onClick={() => setCurrentPage(index + 1)}
                     key={index}
@@ -281,6 +283,10 @@ export default function Home() {
                 selectedUserName={selectedUserName}
                 selectedUserusername={selectedUserusername}
                 selectedUserProfile={selectedUserProfile}
+                lastMessage={lastMessage}
+                setLastMessage={setLastMessage}
+                messages={messages}
+                setMessages={setMessages}
               />
             </div>
           ) : (

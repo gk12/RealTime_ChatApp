@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import aiIcon from "../assets//ai-icon.svg";
-import userAvatar from "../assets/avtar-1.png";
-import galleryIcon from "../assets/gallery.svg";
-import paperClipIcon from "../assets/paperclip.svg";
-import emojiIcon from "../assets/emoji.svg";
-import sendArrowIcon from "../assets/sendArrow.svg";
-import { FiInfo } from "react-icons/fi";
-import axios from "axios";
-import { baseUrl } from "../App";
-import { useSocketContext } from "../context/SocketContex";
+import React, { useEffect, useRef, useState } from 'react';
+import aiIcon from '../assets//ai-icon.svg';
+import userAvatar from '../assets/avtar-1.png';
+import galleryIcon from '../assets/gallery.svg';
+import paperClipIcon from '../assets/paperclip.svg';
+import emojiIcon from '../assets/emoji.svg';
+import sendArrowIcon from '../assets/sendArrow.svg';
+import { FiInfo } from 'react-icons/fi';
+import axios from 'axios';
+import { baseUrl } from '../App';
+import { useSocketContext } from '../context/SocketContex';
 
 const ChatMessages = (props) => {
   const {
@@ -16,26 +16,34 @@ const ChatMessages = (props) => {
     selectedUserusername,
     selectedUserName,
     selectedUserProfile,
+    lastMessage,
+    setLastMessage,
+    messages,
+    setMessages,
   } = props;
   // console.log(
   //   { selectedUserId, selectedUserusername, selectedUserName },
   //   "selectedUserId"
   // );
   const { socket } = useSocketContext();
-  const [messageContent, setMessageContent] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messageContent, setMessageContent] = useState('');
   const scrollRef = useRef();
   const getMessages = async () => {
     try {
-      const messages = await axios.get(
+      const allMessages = await axios.get(
         `${baseUrl}/messages/${selectedUserId}`,
         {
           withCredentials: true,
         }
       );
-      setMessages(messages.data?.messages?.messageId);
+      setMessages(allMessages.data?.messages?.messageId);
+      setLastMessage(
+        allMessages.data?.messages?.messageId[
+          allMessages.data?.messages?.messageId?.length - 1
+        ]?.messageContent
+      );
     } catch (error) {
-      console.log(error, "error");
+      console.log(error, 'error');
     }
   };
   useEffect(() => {
@@ -49,10 +57,10 @@ const ChatMessages = (props) => {
 
   const sendMessages = async (e) => {
     e.preventDefault();
-    setMessageContent("");
+    setMessageContent('');
     if (!messageContent) return;
     setMessages([...messages, { messageContent }]);
-    console.log(messageContent, "value");
+    console.log(messageContent, 'value');
     try {
       const res = await axios.post(
         `${baseUrl}/messages/send/${selectedUserId}`,
@@ -61,16 +69,16 @@ const ChatMessages = (props) => {
       );
       // setMessages(...messages, e.target.value);
     } catch (error) {
-      console.log(error, "error");
+      console.log(error, 'error');
     }
     // setMessageContent("");
   };
   function MessageTime(time) {
     const date = new Date(time);
 
-    const formattedTime = date.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
+    const formattedTime = date.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
       hour12: true,
     });
     return formattedTime;
@@ -82,10 +90,10 @@ const ChatMessages = (props) => {
   }, [messages]);
   // console.log(messages, "messages");
   useEffect(() => {
-    socket?.on("newMessage", (newMessage) => {
+    socket?.on('newMessage', (newMessage) => {
       setMessages([...messages, newMessage]);
     });
-    return () => socket.off("newMessage");
+    return () => socket.off('newMessage');
   }, [socket, setMessages, messages]);
   // const [messages, setMessages] = useState([
   //   {
@@ -179,7 +187,7 @@ const ChatMessages = (props) => {
                             {/* {item.time} */}
                             {item?.createdAt
                               ? MessageTime(item?.createdAt)
-                              : "just now"}
+                              : 'just now'}
                           </p>
                         </div>
                         <img src={aiIcon} alt='logo' className='w-11 h-11' />
