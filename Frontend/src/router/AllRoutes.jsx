@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Signin from "../pages/Signin";
 import Signup from "../pages/Signup";
 import Home from "../pages/Home";
-import axios from "axios";
-import { baseUrl } from "../App";
-import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 
 const AllRoutes = () => {
@@ -13,7 +9,6 @@ const AllRoutes = () => {
   setAuthUser(localStorage.getItem("user"));
   // console.log(localStorage.getItem("auth"));
   console.log(authUser, "authUser");
-  const navigate = useNavigate();
   // const [authenticated, setAuthenticated] = useState(
   //   localStorage.getItem("auth")
   // );
