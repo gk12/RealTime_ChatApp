@@ -25,12 +25,20 @@ The Real-Time Chat App is a modern di-directional communication tool that allows
    ```
 
 2. Install dependencies:
+
+   ```bash
    cd Backend and cd Frontend
    npm install
+   ```
 
 3. Start the server:
+
+   ```bash
    npm start
+   ```
 
 4. Start the client (in a separate terminal):
+   ```bash
    cd Frontend
    npm start
+   ```
