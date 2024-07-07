@@ -15,7 +15,9 @@ export const SocketContextProvider = ({ children }) => {
     console.log(authUser, "authusersnksnkfnknk====");
     if (authUser) {
       // making connection with server(backend) and it will send userId and that will store
-      const socket = io("http://localhost:4008", {
+      // const socket = io("http://localhost:4008", 
+      const socket = io("https://realtime-chatapp-1.onrender.com", 
+      {
         query: {
           userId: JSON.parse(localStorage.getItem("user")).userDetails.id, //authUser.userDetails.id,
         },
