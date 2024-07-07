@@ -12,6 +12,7 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export const baseUrl = "http://localhost:4008/api";
+// https://realtime-chatapp-1.onrender.com/signin
+// export const baseUrl = "http://localhost:4008/api";
+export const baseUrl = "https://realtime-chatapp-1.onrender.com/api";
 export default App;
