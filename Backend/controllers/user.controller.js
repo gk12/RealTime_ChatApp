@@ -8,13 +8,8 @@ const getAllUsers = async (req, res) => {
     const usersPerPage = 5;
     let query = { _id: { $ne: userId } };
     if (search) {
-      query.name = search;
+      query.name = { $regex: new RegExp(search, 'i') };;
     }
-    // const totalUsers = await Users.find({ _id: { $ne: userId } });
-    // const users = await Users.find(query)
-    //   .select("-hashPass")
-    //   .skip((pageNo - 1) * usersPerPage)
-    //   .limit(usersPerPage);
 
     // optimise way of above code
     const [totalUsers, users] = await Promise.all([
